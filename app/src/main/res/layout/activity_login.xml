@@ -3,7 +3,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/TextView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -12,13 +11,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:background="@color/red"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="60dp"
             android:layout_marginStart="10dp"
             android:autoSizeMaxTextSize="56sp"
             android:autoSizeMinTextSize="20sp"
@@ -27,30 +27,33 @@
             android:text="Music App"
             android:textAlignment="gravity"
             android:textColor="@color/white"
-            android:textSize="48sp" />
+            android:textSize="40sp" />
+
     </LinearLayout>
 
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <ImageView
                     android:id="@+id/imageView"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    tools:srcCompat="@drawable/music_big_icon" />
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:visibility="visible"
+                    app:srcCompat="@drawable/music_big_icon"
+                    tools:visibility="visible" />
 
                 <TextView
                     android:id="@+id/textView"
@@ -60,6 +63,7 @@
                     android:text="Welcome"
                     android:textColor="#000000"
                     android:textSize="48sp" />
+
             </LinearLayout>
 
         </TableRow>
@@ -77,6 +81,7 @@
                 android:layout_marginBottom="20dp"
                 android:gravity="center"
                 android:text="Please Log in"
+                android:textColor="#000000"
                 android:textSize="24sp" />
 
         </TableRow>
@@ -87,7 +92,7 @@
             android:gravity="center">
 
             <EditText
-                android:id="@+id/editTextTextAccount"
+                android:id="@+id/editTextAccount"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ems="10"
@@ -102,7 +107,7 @@
             android:gravity="center">
 
             <EditText
-                android:id="@+id/editTextTextPassword"
+                android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ems="10"
@@ -126,26 +131,33 @@
 
                 <Button
                     android:id="@+id/buttonLogin"
-                    android:layout_width="wrap_content"
+                    style="@style/Widget.AppCompat.Button"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="25dp"
+                    android:layout_marginHorizontal="30dp"
                     android:layout_marginVertical="10dp"
-                    android:background="@color/red"
+                    android:background="@drawable/round_button"
                     android:text="Login"
                     android:textColor="#FFFFFF" />
 
                 <Button
-                    android:id="@+id/buttonFoget"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/buttonForget"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="25dp"
+                    android:layout_marginHorizontal="30dp"
                     android:layout_marginVertical="10dp"
-                    android:background="@color/red"
-                    android:text="Button"
+                    android:text="Forget password"
+                    android:background="@drawable/round_button"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
 
         </TableRow>
     </TableLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
