@@ -82,7 +82,9 @@ public class Login extends AppCompatActivity {
                     int duration = Toast.LENGTH_SHORT;
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
-                    editText_Pass.setText("");
+                    editText_Pass.setText("");//clear the input area
+
+                    setResult(RESULT_OK, getIntent().putExtra("user", editText_Account.getText().toString()));
                     Login.this.finish();
                 }else{
                     Context context = getApplicationContext();
