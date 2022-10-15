@@ -11,4 +11,8 @@ public class JavaBeanSong {
     public int duration;
 
     public long size;
+
+    public long coverId;
+
+    public long songId;
 }

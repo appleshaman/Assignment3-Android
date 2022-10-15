@@ -13,7 +13,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,19 +30,35 @@ public class MainActivity extends AppCompatActivity {
     private final ExecutorService e1 = Executors.newSingleThreadScheduledExecutor();
     private ArrayList<JavaBeanSong> musicInformation = new ArrayList<JavaBeanSong>();
     private ListView songList;
+
+    private ImageView imageViewBottom;
+    private ImageButton last;
+    private ImageButton pause;
+    private ImageButton next;
+    private TextView artistName;
+    private TextView songName;
+    private Context context;
     private boolean logged = true;// for debug
+    GetSongCover getSongCover = new GetSongCover();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = this;
         String[] permissions = {
                 "android.permission.READ_EXTERNAL_STORAGE",
                 "android.permission.WRITE_EXTERNAL_STORAGE"
         };
         requestPermissions(permissions, 200);
 
-
         userNameTextView = findViewById(R.id.textViewUser);
+        imageViewBottom = findViewById(R.id.imageViewBottom);
+        last = findViewById(R.id.last);
+        pause = findViewById(R.id.pause);
+        next = findViewById(R.id.next);
+        songName = findViewById(R.id.name);
+        artistName = findViewById(R.id.artist);
+
 
         ActivityResultLauncher activityResultLauncher = registerForActivityResult(new ResultContract(),
                 new ActivityResultCallback<String>() {
@@ -54,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
         }
         if(userName == null){// means have not log in, jump to the login page
             //logged = false;
-
         }
         if(!logged){
             activityResultLauncher.launch(true);
@@ -66,6 +84,18 @@ public class MainActivity extends AppCompatActivity {
         TileAdapter tileAdapter = new TileAdapter();
         songList = (ListView)findViewById(R.id.musicList);
         songList.setAdapter(tileAdapter);
+
+        songList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView textView = view.findViewById(R.id.name);
+                songName.setText(textView.getText());
+                textView = view.findViewById(R.id.artist);
+                artistName.setText(textView.getText());
+                ImageView imageView = view.findViewById(R.id.imageViewCover);
+                imageViewBottom.setImageDrawable(imageView.getDrawable());
+            }
+        });
     }
 
     public class TileAdapter extends BaseAdapter {
@@ -74,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
             TextView name;
             TextView artist;
             TextView duration;
+            ImageView cover;
         }
         @Override
         public int getCount() {
@@ -90,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
             return i;
         }
 
-
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             ViewHolder vh;
@@ -100,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 vh.name = view.findViewById(R.id.name);
                 vh.artist = view.findViewById(R.id.artist);
                 vh.duration = view.findViewById(R.id.duration);
+                vh.cover = view.findViewById(R.id.imageViewCover);
                 view.setTag(vh);
             }else{
                 vh = (ViewHolder) view.getTag();
@@ -113,15 +144,15 @@ public class MainActivity extends AppCompatActivity {
 
                 if(vh.position == i){
                     vh.name.post(()->vh.name.setText(musicInformation.get(i).name));
-                    vh.name.post(()->vh.artist.setText(musicInformation.get(i).artist));
-                    vh.name.post(()->vh.duration.setText(getFormattedTime(musicInformation.get(i).duration)));
+                    vh.artist.post(()->vh.artist.setText(musicInformation.get(i).artist));
+                    vh.duration.post(()->vh.duration.setText(getFormattedTime(musicInformation.get(i).duration)));
+                    vh.cover.post(()->vh.cover.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(i).path)));
                 }
             });
             return view;
         }
-
-
     }
+
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
