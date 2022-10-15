@@ -9,24 +9,33 @@
         android:id="@+id/imageView2"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_weight="1"
+        android:scaleType="fitXY"
         app:srcCompat="@drawable/music_default_cover" />
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:text="TextView" />
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/artist"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:text="TextView" />
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/artist"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:text="TextView" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/duration"
-        android:layout_width="100dp"
+        android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:gravity="center_vertical"
         android:text="TextView" />
 </LinearLayout>
