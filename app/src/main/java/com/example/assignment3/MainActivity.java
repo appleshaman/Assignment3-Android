@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             return musicInformation.size();
-        }// needs implement the
+        }
 
         @Override
         public Object getItem(int i) {
@@ -114,11 +114,13 @@ public class MainActivity extends AppCompatActivity {
                 if(vh.position == i){
                     vh.name.post(()->vh.name.setText(musicInformation.get(i).name));
                     vh.name.post(()->vh.artist.setText(musicInformation.get(i).artist));
-                    vh.name.post(()->vh.duration.setText(musicInformation.get(i).duration));
+                    vh.name.post(()->vh.duration.setText(getFormattedTime(musicInformation.get(i).duration)));
                 }
             });
             return view;
         }
+
+
     }
 
     @Override
@@ -137,6 +139,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public String parseResult(int resultCode, @Nullable Intent intent) {
             return intent.getStringExtra("user");
+        }
+    }
+
+    public static String getFormattedTime(int time) {
+        if (time / 1000 % 60 < 10) {
+            return time / 1000 / 60 + ":0" + time / 1000 % 60;
+        } else {
+            return time / 1000 / 60 + ":" + time / 1000 % 60;
         }
     }
 }

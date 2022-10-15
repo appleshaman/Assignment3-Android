@@ -13,7 +13,7 @@ public class ScanLocalMusic {
         ArrayList<JavaBeanSong> list = new ArrayList<JavaBeanSong>();
         //use cursor like in assignment2
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null,
-                null, MediaStore.Audio.AudioColumns.IS_MUSIC);
+                null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 JavaBeanSong song = new JavaBeanSong();
