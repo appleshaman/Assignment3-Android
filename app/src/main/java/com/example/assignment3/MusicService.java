@@ -40,6 +40,9 @@ public class MusicService extends Service {
                 e.printStackTrace();
             }
         }
+        public MusicService getService() {
+            return MusicService.this;
+        }
         public void pauseMusic(){
             player.pause();
         }

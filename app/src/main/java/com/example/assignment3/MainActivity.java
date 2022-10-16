@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
     GetSongCover getSongCover = new GetSongCover();
 
-    MusicService.controlMusic musicService;//playing music
+    MusicService.controlMusic controlMusic;//playing music
+    MusicService musicService;
     private MyServiceConn myServiceConn;
     private boolean isUnbind = false;
     private Intent intent;
@@ -116,19 +117,19 @@ public class MainActivity extends AppCompatActivity {
                     songName.setText(musicInformation.get(i).name);
                     artistName.setText(musicInformation.get(i).artist);
                     imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
-                    musicService.play(songAddress.getText().toString());
+                    controlMusic.play(songAddress.getText().toString());
 
                     ImageButton imageButton = findViewById(R.id.started);
                     pause.setImageDrawable(imageButton.getDrawable());//change button icon
                 }else {//if clicked the same song again
-                    if(musicService.isPlaying()){
+                    if(controlMusic.isPlaying()){
                         ImageButton imageButton = findViewById(R.id.paused);
                         pause.setImageDrawable(imageButton.getDrawable());//change button icon
-                        musicService.pauseMusic();
+                        controlMusic.pauseMusic();
                     }else{
                         ImageButton imageButton = findViewById(R.id.started);
                         pause.setImageDrawable(imageButton.getDrawable());//change button icon
-                        musicService.continueMusic();
+                        controlMusic.continueMusic();
                     }
                 }
             }
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 ImageView imageView = view.findViewById(R.id.imageViewCover);
                 imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
 
-                musicService.play(songAddress.getText().toString());
+                controlMusic.play(songAddress.getText().toString());
 
                 ImageButton imageButton = findViewById(R.id.started);
                 pause.setImageDrawable(imageButton.getDrawable());//change button icon
@@ -157,14 +158,14 @@ public class MainActivity extends AppCompatActivity {
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(musicService.isPlaying()){
+                if(controlMusic.isPlaying()){
                     ImageButton imageButton = findViewById(R.id.paused);
                     pause.setImageDrawable(imageButton.getDrawable());//change button icon
-                    musicService.pauseMusic();
+                    controlMusic.pauseMusic();
                 }else{
                     ImageButton imageButton = findViewById(R.id.started);
                     pause.setImageDrawable(imageButton.getDrawable());//change button icon
-                    musicService.continueMusic();
+                    controlMusic.continueMusic();
                 }
             }
         });
@@ -181,14 +182,19 @@ public class MainActivity extends AppCompatActivity {
 
                 imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
 
-                musicService.play(songAddress.getText().toString());
+                controlMusic.play(songAddress.getText().toString());
 
                 ImageButton imageButton = findViewById(R.id.started);
                 pause.setImageDrawable(imageButton.getDrawable());//change button icon
             }
         });
 
+        imageViewBottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
     }
 
     public class TileAdapter extends BaseAdapter {
@@ -274,10 +280,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class MyServiceConn implements ServiceConnection {
+    private class MyServiceConn implements ServiceConnection {
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service){
-            musicService = (MusicService.controlMusic) service;
+        public void onServiceConnected(ComponentName name, IBinder iBinder){
+            controlMusic = (MusicService.controlMusic)iBinder;
+            musicService =  controlMusic.getService();
         }
         @Override
         public void onServiceDisconnected(ComponentName name){
@@ -287,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void unbind(boolean isUnbind){
         if(!isUnbind){
-            musicService.pauseMusic();
+            controlMusic.pauseMusic();
             unbindService(myServiceConn);
         }
     }
