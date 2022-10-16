@@ -103,4 +103,28 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/SongAddrForButtom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="TextView"
+        android:visibility="invisible" />
+
+    <ImageButton
+        android:id="@+id/started"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:background="@color/red"
+        android:visibility="invisible"
+        app:srcCompat="@android:drawable/ic_media_pause" />
+
+    <ImageButton
+        android:id="@+id/paused"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:background="@color/red"
+        app:srcCompat="@android:drawable/ic_media_play" />
+
 </LinearLayout>

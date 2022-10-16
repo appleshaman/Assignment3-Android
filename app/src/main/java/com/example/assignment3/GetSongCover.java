@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.widget.ImageView;
 
@@ -26,7 +27,8 @@ public class GetSongCover {
             matrix.postScale(sx, sy);
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
         } else {
-            bitmap = BitmapFactory.decodeResource(context.getResources(), R.id.defaultCover);
+
+            bitmap = BitmapFactory.decodeFile("drawable/music_default_cover.jpg");
             int width = bitmap.getWidth();//if could not find cover from the song
             int height = bitmap.getHeight();
             Matrix matrix = new Matrix();

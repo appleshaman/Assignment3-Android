@@ -6,11 +6,14 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.assignment3.JavaBeanSong;
-import com.example.assignment3.ScanLocalMusic;
+
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -38,13 +41,18 @@ public class MainActivity extends AppCompatActivity {
     private TextView artistName;
     private TextView songName;
     private Context context;
+    private TextView songAddress;
     private boolean logged = true;// for debug
+
     GetSongCover getSongCover = new GetSongCover();
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        context = this;
+
+    MusicService.controlMusic musicService;//playing music
+    private MyServiceConn myServiceConn;
+    private boolean isUnbind = false;
+    private Intent intent;
+
+
+    private void init(){
         String[] permissions = {
                 "android.permission.READ_EXTERNAL_STORAGE",
                 "android.permission.WRITE_EXTERNAL_STORAGE"
@@ -58,7 +66,19 @@ public class MainActivity extends AppCompatActivity {
         next = findViewById(R.id.next);
         songName = findViewById(R.id.name);
         artistName = findViewById(R.id.artist);
+        songAddress = findViewById(R.id.SongAddrForButtom);
+        intent = new Intent(this, MusicService.class);
+        myServiceConn = new MyServiceConn();
+        bindService(intent, myServiceConn,BIND_AUTO_CREATE);
+    }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        context = this;
+
+        init();
 
         ActivityResultLauncher activityResultLauncher = registerForActivityResult(new ResultContract(),
                 new ActivityResultCallback<String>() {
@@ -78,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
             activityResultLauncher.launch(true);
             logged = true;
         }
+
         ScanLocalMusic scanLocalMusic = new ScanLocalMusic();
         musicInformation = scanLocalMusic.getMusicData(this);
 
@@ -88,12 +109,41 @@ public class MainActivity extends AppCompatActivity {
         songList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                TextView textView = view.findViewById(R.id.name);
-                songName.setText(textView.getText());
-                textView = view.findViewById(R.id.artist);
-                artistName.setText(textView.getText());
-                ImageView imageView = view.findViewById(R.id.imageViewCover);
-                imageViewBottom.setImageDrawable(imageView.getDrawable());
+                TextView textView;
+                textView = view.findViewById(R.id.SongAddress);
+                if(textView.getText() != songAddress.getText()){// not the same song
+                    songAddress.setText(textView.getText());
+                    textView = view.findViewById(R.id.name);
+                    songName.setText(textView.getText());
+                    textView = view.findViewById(R.id.artist);
+                    artistName.setText(textView.getText());
+                    ImageView imageView = view.findViewById(R.id.imageViewCover);
+                    imageViewBottom.setImageDrawable(imageView.getDrawable());//set cover
+                    musicService.play(songAddress.getText().toString());
+
+                    ImageButton imageButton = findViewById(R.id.started);
+                    pause.setImageDrawable(imageButton.getDrawable());//change button icon
+
+
+                }else {//if clicked the same song again
+                    if(musicService.isPlaying()){
+                        ImageButton imageButton = findViewById(R.id.paused);
+                        pause.setImageDrawable(imageButton.getDrawable());//change button icon
+                        musicService.pauseMusic();
+                    }else{
+                        ImageButton imageButton = findViewById(R.id.started);
+                        pause.setImageDrawable(imageButton.getDrawable());//change button icon
+                        musicService.continueMusic();
+                    }
+                }
+
+
+
+
+
+
+
+
             }
         });
     }
@@ -101,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
     public class TileAdapter extends BaseAdapter {
         class ViewHolder {
             int position;
+            TextView songAddress;// store the id of song and it's invisible
             TextView name;
             TextView artist;
             TextView duration;
@@ -131,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
                 vh.artist = view.findViewById(R.id.artist);
                 vh.duration = view.findViewById(R.id.duration);
                 vh.cover = view.findViewById(R.id.imageViewCover);
+                vh.songAddress = view.findViewById(R.id.SongAddress);
                 view.setTag(vh);
             }else{
                 vh = (ViewHolder) view.getTag();
@@ -147,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
                     vh.artist.post(()->vh.artist.setText(musicInformation.get(i).artist));
                     vh.duration.post(()->vh.duration.setText(getFormattedTime(musicInformation.get(i).duration)));
                     vh.cover.post(()->vh.cover.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(i).path)));
+                    vh.songAddress.post(()->vh.songAddress.setText(musicInformation.get(i).path));
                 }
             });
             return view;
@@ -180,4 +233,29 @@ public class MainActivity extends AppCompatActivity {
             return time / 1000 / 60 + ":" + time / 1000 % 60;
         }
     }
+
+    class MyServiceConn implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service){
+            musicService = (MusicService.controlMusic) service;
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName name){
+
+        }
+    }
+
+    private void unbind(boolean isUnbind){
+        if(!isUnbind){
+            musicService.pauseMusic();
+            unbindService(myServiceConn);
+        }
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        unbind(isUnbind);
+    }
+
 }

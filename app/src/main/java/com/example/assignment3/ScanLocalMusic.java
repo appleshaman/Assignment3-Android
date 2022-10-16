@@ -27,7 +27,7 @@ public class ScanLocalMusic {
                 song.coverId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
                 song.songId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
 
-                if (song.name.contains("-")) {
+                if (song.name.contains("-")) {// split the song name and singer's name
                     String[] strings = song.name.split("-");
                     song.name = strings[1];
                     song.artist = strings[0];
