@@ -34,6 +34,7 @@ public class MusicService extends Service {
                 player.reset();
                 player = MediaPlayer.create(getApplicationContext(), uri);
                 player.start();
+
                 //addTimer();
             }catch(Exception e){
                 e.printStackTrace();

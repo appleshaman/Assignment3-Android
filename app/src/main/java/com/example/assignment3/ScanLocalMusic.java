@@ -32,6 +32,21 @@ public class ScanLocalMusic {
                     song.name = strings[1];
                     song.artist = strings[0];
                 }
+                if ((song.name.charAt(song.name.length()-4) == '.')&&// remove .mp3 suffix
+                        (song.name.charAt(song.name.length()-3) == 'm')&&
+                        (song.name.charAt(song.name.length()-2) == 'p')&&
+                        (song.name.charAt(song.name.length()-1) == '3')){
+                    song.name = song.name.substring(0, song.name.length()-4);
+                }
+
+                if ((song.name.charAt(song.name.length()-5) == '.')&&
+                        (song.name.charAt(song.name.length()-4) == 'f')&&// remove .flac suffix
+                        (song.name.charAt(song.name.length()-3) == 'l')&&
+                        (song.name.charAt(song.name.length()-2) == 'a')&&
+                        (song.name.charAt(song.name.length()-1) == 'c')){
+                    song.name = song.name.substring(0, song.name.length()-4);
+                }
+
                 list.add(song);
             }
             cursor.close();

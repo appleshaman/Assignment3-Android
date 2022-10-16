@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private final ExecutorService e1 = Executors.newSingleThreadScheduledExecutor();
     private ArrayList<JavaBeanSong> musicInformation = new ArrayList<JavaBeanSong>();
     private ListView songList;
+    private int selectedSong = -1;
 
     private ImageView imageViewBottom;
     private ImageButton last;
@@ -109,22 +110,16 @@ public class MainActivity extends AppCompatActivity {
         songList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                TextView textView;
-                textView = view.findViewById(R.id.SongAddress);
-                if(textView.getText() != songAddress.getText()){// not the same song
-                    songAddress.setText(textView.getText());
-                    textView = view.findViewById(R.id.name);
-                    songName.setText(textView.getText());
-                    textView = view.findViewById(R.id.artist);
-                    artistName.setText(textView.getText());
-                    ImageView imageView = view.findViewById(R.id.imageViewCover);
-                    imageViewBottom.setImageDrawable(imageView.getDrawable());//set cover
+                selectedSong = i;
+                if(musicInformation.get(i).path != songAddress.getText()){// not the same song
+                    songAddress.setText(musicInformation.get(i).path);
+                    songName.setText(musicInformation.get(i).name);
+                    artistName.setText(musicInformation.get(i).artist);
+                    imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
                     musicService.play(songAddress.getText().toString());
 
                     ImageButton imageButton = findViewById(R.id.started);
                     pause.setImageDrawable(imageButton.getDrawable());//change button icon
-
-
                 }else {//if clicked the same song again
                     if(musicService.isPlaying()){
                         ImageButton imageButton = findViewById(R.id.paused);
@@ -136,22 +131,69 @@ public class MainActivity extends AppCompatActivity {
                         musicService.continueMusic();
                     }
                 }
-
-
-
-
-
-
-
-
             }
         });
+
+        last.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectedSong --;
+                if(selectedSong == -1){// if over range
+                    selectedSong = musicInformation.size() - 1;
+                }
+                songAddress.setText(musicInformation.get(selectedSong).path);
+                songName.setText(musicInformation.get(selectedSong).name);
+                artistName.setText(musicInformation.get(selectedSong).artist);
+
+                ImageView imageView = view.findViewById(R.id.imageViewCover);
+                imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
+
+                musicService.play(songAddress.getText().toString());
+
+                ImageButton imageButton = findViewById(R.id.started);
+                pause.setImageDrawable(imageButton.getDrawable());//change button icon
+            }
+        });
+        pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(musicService.isPlaying()){
+                    ImageButton imageButton = findViewById(R.id.paused);
+                    pause.setImageDrawable(imageButton.getDrawable());//change button icon
+                    musicService.pauseMusic();
+                }else{
+                    ImageButton imageButton = findViewById(R.id.started);
+                    pause.setImageDrawable(imageButton.getDrawable());//change button icon
+                    musicService.continueMusic();
+                }
+            }
+        });
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectedSong ++;
+                if(selectedSong == musicInformation.size()){// if over range
+                    selectedSong = 0;
+                }
+                songAddress.setText(musicInformation.get(selectedSong).path);
+                songName.setText(musicInformation.get(selectedSong).name);
+                artistName.setText(musicInformation.get(selectedSong).artist);
+
+                imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
+
+                musicService.play(songAddress.getText().toString());
+
+                ImageButton imageButton = findViewById(R.id.started);
+                pause.setImageDrawable(imageButton.getDrawable());//change button icon
+            }
+        });
+
+
     }
 
     public class TileAdapter extends BaseAdapter {
         class ViewHolder {
             int position;
-            TextView songAddress;// store the id of song and it's invisible
             TextView name;
             TextView artist;
             TextView duration;
@@ -182,7 +224,6 @@ public class MainActivity extends AppCompatActivity {
                 vh.artist = view.findViewById(R.id.artist);
                 vh.duration = view.findViewById(R.id.duration);
                 vh.cover = view.findViewById(R.id.imageViewCover);
-                vh.songAddress = view.findViewById(R.id.SongAddress);
                 view.setTag(vh);
             }else{
                 vh = (ViewHolder) view.getTag();
@@ -199,7 +240,6 @@ public class MainActivity extends AppCompatActivity {
                     vh.artist.post(()->vh.artist.setText(musicInformation.get(i).artist));
                     vh.duration.post(()->vh.duration.setText(getFormattedTime(musicInformation.get(i).duration)));
                     vh.cover.post(()->vh.cover.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(i).path)));
-                    vh.songAddress.post(()->vh.songAddress.setText(musicInformation.get(i).path));
                 }
             });
             return view;
