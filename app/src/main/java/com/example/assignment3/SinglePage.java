@@ -82,8 +82,8 @@ public class SinglePage extends AppCompatActivity {
             int total = bundle.getInt("totalDuration");
             int current = bundle.getInt("currentDuration");
 
-            float progress = ((float)current / (float)total) * 100;
-            progressBar.setProgress((int)progress);
+            progressBar.setProgress(total);
+            progressBar.setProgress(current);
             totalDuration.setText(FormatTheTime.getFormattedTime(total));
             currentDuration.setText(FormatTheTime.getFormattedTime(current));
         }
@@ -119,7 +119,7 @@ public class SinglePage extends AppCompatActivity {
             pause.setImageDrawable(imageButton.getDrawable());//change button icon
         }
 
-
+        
 
         last.setOnClickListener(new View.OnClickListener() {
             @Override

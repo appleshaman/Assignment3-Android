@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private Context context;
     private TextView songAddress;
 
+    private boolean loopOrNot = false;// if loop to play this song
     private boolean logged = true;// for debug
 
     GetSongCover getSongCover = new GetSongCover();
