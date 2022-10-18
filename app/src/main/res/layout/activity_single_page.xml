@@ -87,13 +87,34 @@
             android:backgroundTint="@color/red"
             app:srcCompat="@android:drawable/ic_menu_rotate" />
 
+        <TextView
+            android:id="@+id/currentDuration"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="0:00"
+            android:textColor="@color/white" />
+
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="7"
-            android:background="@color/red" />
+            android:layout_weight="4"
+            android:background="@color/red"
+            android:progress="0"
+            android:progressTint="@color/white" />
+
+        <TextView
+            android:id="@+id/totalDuration"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="0:00"
+            android:textColor="@color/white" />
+
     </LinearLayout>
 
     <LinearLayout

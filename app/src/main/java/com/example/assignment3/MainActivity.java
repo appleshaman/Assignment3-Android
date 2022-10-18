@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView songName;
     private Context context;
     private TextView songAddress;
+
     private boolean logged = true;// for debug
 
     GetSongCover getSongCover = new GetSongCover();
@@ -69,9 +71,13 @@ public class MainActivity extends AppCompatActivity {
         songName = findViewById(R.id.nameForSingle);
         artistName = findViewById(R.id.artistForSingle);
         songAddress = findViewById(R.id.SongAddrForButtom);
+
+
+
         intent = new Intent(this, MusicService.class);
         myServiceConn = new MyServiceConn();
-        bindService(intent, myServiceConn,BIND_AUTO_CREATE);
+        bindService(intent, myServiceConn, BIND_AUTO_CREATE);
+
     }
 
     @Override
@@ -79,10 +85,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         init();
-
-        ActivityResultLauncher activityResultLauncherForLogin = registerForActivityResult(new ResultContract(),
+        ActivityResultLauncher activityResultLauncherForLogin = registerForActivityResult(new ResultContractForLogin(),
                 new ActivityResultCallback<String>() {
                     @Override
                     public void onActivityResult(String result) {
@@ -90,11 +94,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
-        ActivityResultLauncher activityResultLauncherForSingle = registerForActivityResult(new ResultContract(),
+        ActivityResultLauncher activityResultLauncherForSingle = registerForActivityResult(new ResultContractForSinglePage(),
                 new ActivityResultCallback<String>() {
                     @Override
                     public void onActivityResult(String result) {
-                        selectedSong = Integer.getInteger(result);
+                        if(!Objects.equals(musicInformation.get(selectedSong).path, musicInformation.get(Integer.parseInt(result)).path)) {
+                            selectedSong = Integer.parseInt(result);
+                            songAddress.setText(musicInformation.get(selectedSong).path);
+                            songName.setText(musicInformation.get(selectedSong).name);
+                            artistName.setText(musicInformation.get(selectedSong).artist);
+                            imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
+
+
+                        }
                     }
                 }
         );
@@ -117,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
         TileAdapter tileAdapter = new TileAdapter();
         songList = (ListView)findViewById(R.id.musicList);
         songList.setAdapter(tileAdapter);
-
         songList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -202,12 +213,7 @@ public class MainActivity extends AppCompatActivity {
         imageViewBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SinglePage.class);
-
-                intent.putExtra("musicInformation" , (Serializable) musicInformation);
-                intent.putExtra("selectedSong", selectedSong);
-                intent.putExtra("isPlay", controlMusic.isPlaying());
-                startActivity(intent);
+                activityResultLauncherForSingle.launch(true);
             }
         });
     }
@@ -258,7 +264,8 @@ public class MainActivity extends AppCompatActivity {
                 if(vh.position == i){
                     vh.name.post(()->vh.name.setText(musicInformation.get(i).name));
                     vh.artist.post(()->vh.artist.setText(musicInformation.get(i).artist));
-                    vh.duration.post(()->vh.duration.setText(getFormattedTime(musicInformation.get(i).duration)));
+                    FormatTheTime formatTheTime = new FormatTheTime();
+                    vh.duration.post(()->vh.duration.setText(formatTheTime.getFormattedTime(musicInformation.get(i).duration)));
                     vh.cover.post(()->vh.cover.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(i).path, false)));
                 }
             });
@@ -273,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    private class ResultContract extends ActivityResultContract<Boolean, String> {
+    private class ResultContractForLogin extends ActivityResultContract<Boolean, String> {
         @NonNull
         @Override
         public Intent createIntent(@NonNull Context context, Boolean input) {
@@ -286,13 +293,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static String getFormattedTime(int time) {
-        if (time / 1000 % 60 < 10) {
-            return time / 1000 / 60 + ":0" + time / 1000 % 60;
-        } else {
-            return time / 1000 / 60 + ":" + time / 1000 % 60;
+    private class ResultContractForSinglePage extends ActivityResultContract<Boolean, String> {
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Boolean input) {
+            Intent intent = new Intent(MainActivity.this, SinglePage.class);
+            intent.putExtra("musicInformation" , (Serializable) musicInformation);
+            intent.putExtra("selectedSong", selectedSong);
+            intent.putExtra("isPlay", controlMusic.isPlaying());
+            return intent;
+        }
+
+        @Override
+        public String parseResult(int resultCode, @Nullable Intent intent) {
+            return intent.getStringExtra("selectedSong");
         }
     }
+
+
 
     private class MyServiceConn implements ServiceConnection {
         @Override
