@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="5dp"
-        android:layout_weight="2.7"
+        android:layout_weight="3"
         android:background="@color/red"
         android:orientation="horizontal">
 
@@ -39,7 +39,8 @@
                 android:gravity="center"
                 android:text="No Song is Playing"
                 android:textAlignment="center"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/artistForSingle"
@@ -49,7 +50,8 @@
                 android:gravity="center"
                 android:text=" Unknown Artist"
                 android:textAlignment="center"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:layout_width="match_parent"
@@ -74,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="5"
+        android:layout_weight="4"
         android:background="@color/red"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/music_default_cover" />
@@ -82,7 +84,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="1.5"
         android:orientation="horizontal">
 
         <ImageButton
@@ -102,15 +104,20 @@
             android:text="0:00"
             android:textColor="@color/white" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
+        <SeekBar
+            android:id="@+id/seekBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="4"
             android:background="@color/red"
+            android:maxHeight="5dp"
+            android:minHeight="5dp"
+            android:backgroundTint="@color/red"
             android:progress="0"
-            android:progressTint="@color/white" />
+            android:progressBackgroundTint="@color/white"
+            android:progressDrawable="@drawable/seekbar_progress_color"
+            android:thumbTint="@color/white" />
+
 
         <TextView
             android:id="@+id/totalDuration"
@@ -128,7 +135,7 @@
         android:layout_height="0dp"
         android:layout_gravity="bottom"
         android:layout_marginBottom="10dp"
-        android:layout_weight="1"
+        android:layout_weight="1.5"
         android:background="@color/red"
         android:orientation="horizontal">
 

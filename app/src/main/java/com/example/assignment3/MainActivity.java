@@ -6,10 +6,13 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -57,8 +60,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean isUnbind = false;
     private Intent intent;
 
+    LocalBroadcastManager localBroadcastManagerForFinish;
+    LocalBroadcastManager localBroadcastManagerForLoop;
+    IntentFilter intentFilterForFinish;
+    IntentFilter intentFilterForLoop;
+    ReceiverForFinish receiverForFinish;
+    ReceiverForLoop receiverForLoop;
 
-    private void init(){
+    private void init() {
         String[] permissions = {
                 "android.permission.READ_EXTERNAL_STORAGE",
                 "android.permission.WRITE_EXTERNAL_STORAGE"
@@ -75,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         songAddress = findViewById(R.id.SongAddrForButtom);
 
 
-
         intent = new Intent(this, MusicService.class);
         myServiceConn = new MyServiceConn();
         bindService(intent, myServiceConn, BIND_AUTO_CREATE);
@@ -88,6 +96,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
+        localBroadcastManagerForFinish = LocalBroadcastManager.getInstance(this);
+        intentFilterForFinish = new IntentFilter("finish");
+        receiverForFinish = new ReceiverForFinish();
+
+        localBroadcastManagerForFinish.registerReceiver(receiverForFinish, intentFilterForFinish);
+
+        localBroadcastManagerForLoop = LocalBroadcastManager.getInstance(this);
+        intentFilterForLoop = new IntentFilter("loop");
+        receiverForLoop = new ReceiverForLoop();
+
+        localBroadcastManagerForLoop.registerReceiver(receiverForLoop, intentFilterForLoop);
+
         ActivityResultLauncher activityResultLauncherForLogin = registerForActivityResult(new ResultContractForLogin(),
                 new ActivityResultCallback<String>() {
                     @Override
@@ -100,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 new ActivityResultCallback<String>() {
                     @Override
                     public void onActivityResult(String result) {
-                        if(!Objects.equals(musicInformation.get(selectedSong).path, musicInformation.get(Integer.parseInt(result)).path)) {
+                        if (!Objects.equals(musicInformation.get(selectedSong).path, musicInformation.get(Integer.parseInt(result)).path)) {
                             selectedSong = Integer.parseInt(result);
                             songAddress.setText(musicInformation.get(selectedSong).path);
                             songName.setText(musicInformation.get(selectedSong).name);
@@ -114,13 +134,13 @@ public class MainActivity extends AppCompatActivity {
         );
 
 
-        if(savedInstanceState != null) {
-            userName = savedInstanceState.getString("userName",null);
+        if (savedInstanceState != null) {
+            userName = savedInstanceState.getString("userName", null);
         }
-        if(userName == null){// means if have not logged in, jump to the login page
-            //logged = false;
+        if (userName == null) {// means if have not logged in, jump to the login page
+            logged = false;// comment out this to skip the login process for debug
         }
-        if(!logged){
+        if (!logged) {
             activityResultLauncherForLogin.launch(true);
             logged = true;
         }
@@ -129,13 +149,13 @@ public class MainActivity extends AppCompatActivity {
         musicInformation = scanLocalMusic.getMusicData(this);
 
         TileAdapter tileAdapter = new TileAdapter();
-        songList = (ListView)findViewById(R.id.musicList);
+        songList = (ListView) findViewById(R.id.musicList);
         songList.setAdapter(tileAdapter);
         songList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 selectedSong = i;
-                if(musicInformation.get(i).path != songAddress.getText()){// not the same song
+                if (musicInformation.get(i).path != songAddress.getText()) {// not the same song
                     songAddress.setText(musicInformation.get(i).path);
                     songName.setText(musicInformation.get(i).name);
                     artistName.setText(musicInformation.get(i).artist);
@@ -144,12 +164,12 @@ public class MainActivity extends AppCompatActivity {
 
                     ImageButton imageButton = findViewById(R.id.started);
                     pause.setImageDrawable(imageButton.getDrawable());//change button icon
-                }else {//if clicked the same song again
-                    if(controlMusic.isPlaying()){
+                } else {//if clicked the same song again
+                    if (controlMusic.isPlaying()) {
                         ImageButton imageButton = findViewById(R.id.paused);
                         pause.setImageDrawable(imageButton.getDrawable());//change button icon
                         controlMusic.pauseMusic();
-                    }else{
+                    } else {
                         ImageButton imageButton = findViewById(R.id.started);
                         pause.setImageDrawable(imageButton.getDrawable());//change button icon
                         controlMusic.continueMusic();
@@ -161,15 +181,15 @@ public class MainActivity extends AppCompatActivity {
         last.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(selectedSong == -1){// means no song selected
+                if (selectedSong == -1) {// means no song selected
                     Context context = getApplicationContext();
                     CharSequence text = "No song is selected";
                     int duration = Toast.LENGTH_SHORT;
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
-                }else {
-                    selectedSong --;
-                    if(selectedSong == -1){// if over range, such as if last song is in index 0
+                } else {
+                    selectedSong--;
+                    if (selectedSong == -1) {// if over range, such as if last song is in index 0
                         selectedSong = musicInformation.size() - 1;
                     }
                     songAddress.setText(musicInformation.get(selectedSong).path);
@@ -189,13 +209,13 @@ public class MainActivity extends AppCompatActivity {
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(selectedSong == -1){// means no song selected
+                if (selectedSong == -1) {// means no song selected
                     Context context = getApplicationContext();
                     CharSequence text = "No song is selected";
                     int duration = Toast.LENGTH_SHORT;
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
-                }else {
+                } else {
                     if (controlMusic.isPlaying()) {
                         ImageButton imageButton = findViewById(R.id.paused);
                         pause.setImageDrawable(imageButton.getDrawable());//change button icon
@@ -211,13 +231,13 @@ public class MainActivity extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(selectedSong == -1){// means no song selected
+                if (selectedSong == -1) {// means no song selected
                     Context context = getApplicationContext();
                     CharSequence text = "No song is selected";
                     int duration = Toast.LENGTH_SHORT;
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
-                }else {
+                } else {
                     selectedSong++;
                     if (selectedSong == musicInformation.size()) {// if over range, if the song is the last one, then jump to the first one
                         selectedSong = 0;
@@ -239,13 +259,13 @@ public class MainActivity extends AppCompatActivity {
         imageViewBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(selectedSong == -1){// means no song selected
+                if (selectedSong == -1) {// means no song selected
                     Context context = getApplicationContext();
                     CharSequence text = "No song is selected";
                     int duration = Toast.LENGTH_SHORT;
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
-                }else {
+                } else {
                     activityResultLauncherForSingle.launch(true);
                 }
             }
@@ -260,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
             TextView duration;
             ImageView cover;
         }
+
         @Override
         public int getCount() {
             return musicInformation.size();
@@ -278,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             ViewHolder vh;
-            if (view == null){
+            if (view == null) {
                 view = getLayoutInflater().inflate(R.layout.music_information, viewGroup, false);
                 vh = new ViewHolder();
                 vh.name = view.findViewById(R.id.nameForSingle);
@@ -286,21 +307,21 @@ public class MainActivity extends AppCompatActivity {
                 vh.duration = view.findViewById(R.id.duration);
                 vh.cover = view.findViewById(R.id.imageViewCover);
                 view.setTag(vh);
-            }else{
+            } else {
                 vh = (ViewHolder) view.getTag();
             }
             vh.position = i;
 
-            e1.submit(()->{
-                if(vh.position != i){
+            e1.submit(() -> {
+                if (vh.position != i) {
                     return;
                 }
-                if(vh.position == i){
-                    vh.name.post(()->vh.name.setText(musicInformation.get(i).name));
-                    vh.artist.post(()->vh.artist.setText(musicInformation.get(i).artist));
+                if (vh.position == i) {
+                    vh.name.post(() -> vh.name.setText(musicInformation.get(i).name));
+                    vh.artist.post(() -> vh.artist.setText(musicInformation.get(i).artist));
                     FormatTheTime formatTheTime = new FormatTheTime();
-                    vh.duration.post(()->vh.duration.setText(formatTheTime.getFormattedTime(musicInformation.get(i).duration)));
-                    vh.cover.post(()->vh.cover.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(i).path, false)));
+                    vh.duration.post(() -> vh.duration.setText(formatTheTime.getFormattedTime(musicInformation.get(i).duration)));
+                    vh.cover.post(() -> vh.cover.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(i).path, false)));
                 }
             });
             return view;
@@ -332,7 +353,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Intent createIntent(@NonNull Context context, Boolean input) {
             Intent intent = new Intent(MainActivity.this, SinglePage.class);
-            intent.putExtra("musicInformation" , (Serializable) musicInformation);
+            intent.putExtra("loop", loopOrNot);
+            intent.putExtra("musicInformation", (Serializable) musicInformation);
             intent.putExtra("selectedSong", selectedSong);
             intent.putExtra("isPlay", controlMusic.isPlaying());
             return intent;
@@ -345,30 +367,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private class MyServiceConn implements ServiceConnection {
         @Override
-        public void onServiceConnected(ComponentName name, IBinder iBinder){
-            controlMusic = (MusicService.controlMusic)iBinder;
-            musicService =  controlMusic.getService();
+        public void onServiceConnected(ComponentName name, IBinder iBinder) {
+            controlMusic = (MusicService.controlMusic) iBinder;
+            musicService = controlMusic.getService();
         }
+
         @Override
-        public void onServiceDisconnected(ComponentName name){
+        public void onServiceDisconnected(ComponentName name) {
 
         }
     }
 
-    private void unbind(boolean isUnbind){
-        if(!isUnbind){
+    private void unbind(boolean isUnbind) {
+        if (!isUnbind) {
             controlMusic.pauseMusic();
             unbindService(myServiceConn);
         }
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         unbind(isUnbind);
+    }
+
+    public class ReceiverForLoop extends BroadcastReceiver {// receive the duration time
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            loopOrNot = intent.getBooleanExtra("loopOrNot", false);
+
+        }
+    }
+
+    public class ReceiverForFinish extends BroadcastReceiver {// receive the duration time
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getBooleanExtra("musicFinished", true)) {
+                if (!loopOrNot) {
+                    ImageButton imageButton = findViewById(R.id.paused);
+                    pause.setImageDrawable(imageButton.getDrawable());//change button icon
+                    controlMusic.pauseMusic();
+                }
+
+            } else {
+                if(controlMusic.isPlaying()){// check again because the loop may already started
+                    ImageButton imageButton = findViewById(R.id.started);
+                    pause.setImageDrawable(imageButton.getDrawable());//change button icon
+                    controlMusic.continueMusic();
+                }
+            }
+        }
     }
 
 }

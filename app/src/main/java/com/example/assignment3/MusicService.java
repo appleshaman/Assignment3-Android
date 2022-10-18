@@ -51,7 +51,7 @@ public class MusicService extends Service {
                     bundle.putInt("currentDuration",currentPosition);
                     Intent intent = new Intent();
                     intent.putExtra("musicDuration", bundle);
-                    intent.setAction("localBroadcast");
+                    intent.setAction("progress");
                     LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
                     localBroadcastManager.sendBroadcast(intent);
 
@@ -59,8 +59,8 @@ public class MusicService extends Service {
             };
             timer.schedule(timerTask,10, 500);
         }
-
     }
+
     class controlMusic extends Binder {
         public void play(String path){
             Uri uri = Uri.parse(path);
@@ -89,8 +89,12 @@ public class MusicService extends Service {
         public boolean isPlaying(){
             return player.isPlaying();
         }
-
-
+        public void setLooping(boolean bool){
+            player.setLooping(bool);
+        }
+        public boolean isLooping(){
+            return player.isLooping();
+        }
 
     }
     @Override
