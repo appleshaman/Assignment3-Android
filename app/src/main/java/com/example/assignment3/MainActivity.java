@@ -11,7 +11,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
@@ -23,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,14 +60,14 @@ public class MainActivity extends AppCompatActivity {
                 "android.permission.WRITE_EXTERNAL_STORAGE"
         };
         requestPermissions(permissions, 200);
-
+        context = this;
         userNameTextView = findViewById(R.id.textViewUser);
         imageViewBottom = findViewById(R.id.imageViewBottom);
-        last = findViewById(R.id.last);
-        pause = findViewById(R.id.pause);
-        next = findViewById(R.id.next);
-        songName = findViewById(R.id.name);
-        artistName = findViewById(R.id.artist);
+        last = findViewById(R.id.lastForSingle);
+        pause = findViewById(R.id.pauseForSingle);
+        next = findViewById(R.id.nextForSingle);
+        songName = findViewById(R.id.nameForSingle);
+        artistName = findViewById(R.id.artistForSingle);
         songAddress = findViewById(R.id.SongAddrForButtom);
         intent = new Intent(this, MusicService.class);
         myServiceConn = new MyServiceConn();
@@ -78,11 +78,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        context = this;
+
 
         init();
 
-        ActivityResultLauncher activityResultLauncher = registerForActivityResult(new ResultContract(),
+        ActivityResultLauncher activityResultLauncherForLogin = registerForActivityResult(new ResultContract(),
                 new ActivityResultCallback<String>() {
                     @Override
                     public void onActivityResult(String result) {
@@ -90,14 +90,24 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+        ActivityResultLauncher activityResultLauncherForSingle = registerForActivityResult(new ResultContract(),
+                new ActivityResultCallback<String>() {
+                    @Override
+                    public void onActivityResult(String result) {
+                        selectedSong = Integer.getInteger(result);
+                    }
+                }
+        );
+
+
         if(savedInstanceState != null) {
             userName = savedInstanceState.getString("userName",null);
         }
-        if(userName == null){// means have not log in, jump to the login page
+        if(userName == null){// means if have not logged in, jump to the login page
             //logged = false;
         }
         if(!logged){
-            activityResultLauncher.launch(true);
+            activityResultLauncherForLogin.launch(true);
             logged = true;
         }
 
@@ -192,7 +202,12 @@ public class MainActivity extends AppCompatActivity {
         imageViewBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SinglePage.class);
 
+                intent.putExtra("musicInformation" , (Serializable) musicInformation);
+                intent.putExtra("selectedSong", selectedSong);
+                intent.putExtra("isPlay", controlMusic.isPlaying());
+                startActivity(intent);
             }
         });
     }
@@ -226,8 +241,8 @@ public class MainActivity extends AppCompatActivity {
             if (view == null){
                 view = getLayoutInflater().inflate(R.layout.music_information, viewGroup, false);
                 vh = new ViewHolder();
-                vh.name = view.findViewById(R.id.name);
-                vh.artist = view.findViewById(R.id.artist);
+                vh.name = view.findViewById(R.id.nameForSingle);
+                vh.artist = view.findViewById(R.id.artistForSingle);
                 vh.duration = view.findViewById(R.id.duration);
                 vh.cover = view.findViewById(R.id.imageViewCover);
                 view.setTag(vh);
@@ -240,7 +255,6 @@ public class MainActivity extends AppCompatActivity {
                 if(vh.position != i){
                     return;
                 }
-
                 if(vh.position == i){
                     vh.name.post(()->vh.name.setText(musicInformation.get(i).name));
                     vh.artist.post(()->vh.artist.setText(musicInformation.get(i).artist));

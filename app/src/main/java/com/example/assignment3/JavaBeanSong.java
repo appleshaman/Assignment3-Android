@@ -1,6 +1,8 @@
 package com.example.assignment3;
 
-public class JavaBeanSong {
+import java.io.Serializable;
+
+public class JavaBeanSong implements Serializable {
 
     public String artist;
 
