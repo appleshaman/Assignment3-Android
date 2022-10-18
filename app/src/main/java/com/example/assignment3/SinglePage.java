@@ -75,7 +75,7 @@ public class SinglePage extends AppCompatActivity {
 
 
 
-    public class Receiver extends BroadcastReceiver{
+    public class Receiver extends BroadcastReceiver{// receive the duration time
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getBundleExtra("musicDuration");

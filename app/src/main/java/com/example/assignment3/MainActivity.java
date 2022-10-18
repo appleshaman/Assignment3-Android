@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -159,61 +160,93 @@ public class MainActivity extends AppCompatActivity {
         last.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectedSong --;
-                if(selectedSong == -1){// if over range
-                    selectedSong = musicInformation.size() - 1;
+                if(selectedSong == -1){// means no song selected
+                    Context context = getApplicationContext();
+                    CharSequence text = "No song is selected";
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }else {
+                    selectedSong --;
+                    if(selectedSong == -1){// if over range, such as if last song is in index 0
+                        selectedSong = musicInformation.size() - 1;
+                    }
+                    songAddress.setText(musicInformation.get(selectedSong).path);
+                    songName.setText(musicInformation.get(selectedSong).name);
+                    artistName.setText(musicInformation.get(selectedSong).artist);
+
+                    ImageView imageView = view.findViewById(R.id.imageViewCover);
+                    imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
+
+                    controlMusic.play(songAddress.getText().toString());
+
+                    ImageButton imageButton = findViewById(R.id.started);
+                    pause.setImageDrawable(imageButton.getDrawable());//change button icon
                 }
-                songAddress.setText(musicInformation.get(selectedSong).path);
-                songName.setText(musicInformation.get(selectedSong).name);
-                artistName.setText(musicInformation.get(selectedSong).artist);
-
-                ImageView imageView = view.findViewById(R.id.imageViewCover);
-                imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
-
-                controlMusic.play(songAddress.getText().toString());
-
-                ImageButton imageButton = findViewById(R.id.started);
-                pause.setImageDrawable(imageButton.getDrawable());//change button icon
             }
         });
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(controlMusic.isPlaying()){
-                    ImageButton imageButton = findViewById(R.id.paused);
-                    pause.setImageDrawable(imageButton.getDrawable());//change button icon
-                    controlMusic.pauseMusic();
-                }else{
-                    ImageButton imageButton = findViewById(R.id.started);
-                    pause.setImageDrawable(imageButton.getDrawable());//change button icon
-                    controlMusic.continueMusic();
+                if(selectedSong == -1){// means no song selected
+                    Context context = getApplicationContext();
+                    CharSequence text = "No song is selected";
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }else {
+                    if (controlMusic.isPlaying()) {
+                        ImageButton imageButton = findViewById(R.id.paused);
+                        pause.setImageDrawable(imageButton.getDrawable());//change button icon
+                        controlMusic.pauseMusic();
+                    } else {
+                        ImageButton imageButton = findViewById(R.id.started);
+                        pause.setImageDrawable(imageButton.getDrawable());//change button icon
+                        controlMusic.continueMusic();
+                    }
                 }
             }
         });
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectedSong ++;
-                if(selectedSong == musicInformation.size()){// if over range
-                    selectedSong = 0;
+                if(selectedSong == -1){// means no song selected
+                    Context context = getApplicationContext();
+                    CharSequence text = "No song is selected";
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }else {
+                    selectedSong++;
+                    if (selectedSong == musicInformation.size()) {// if over range, if the song is the last one, then jump to the first one
+                        selectedSong = 0;
+                    }
+                    songAddress.setText(musicInformation.get(selectedSong).path);
+                    songName.setText(musicInformation.get(selectedSong).name);
+                    artistName.setText(musicInformation.get(selectedSong).artist);
+
+                    imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
+
+                    controlMusic.play(songAddress.getText().toString());
+
+                    ImageButton imageButton = findViewById(R.id.started);
+                    pause.setImageDrawable(imageButton.getDrawable());//change button icon
                 }
-                songAddress.setText(musicInformation.get(selectedSong).path);
-                songName.setText(musicInformation.get(selectedSong).name);
-                artistName.setText(musicInformation.get(selectedSong).artist);
-
-                imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
-
-                controlMusic.play(songAddress.getText().toString());
-
-                ImageButton imageButton = findViewById(R.id.started);
-                pause.setImageDrawable(imageButton.getDrawable());//change button icon
             }
         });
 
         imageViewBottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activityResultLauncherForSingle.launch(true);
+                if(selectedSong == -1){// means no song selected
+                    Context context = getApplicationContext();
+                    CharSequence text = "No song is selected";
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }else {
+                    activityResultLauncherForSingle.launch(true);
+                }
             }
         });
     }

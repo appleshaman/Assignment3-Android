@@ -51,6 +51,11 @@
                 android:textAlignment="center"
                 android:textColor="@color/white" />
 
+            <androidx.constraintlayout.widget.Barrier
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:barrierDirection="top" />
+
         </LinearLayout>
 
         <ImageButton
@@ -71,6 +76,7 @@
         android:layout_gravity="center"
         android:layout_weight="5"
         android:background="@color/red"
+        android:scaleType="fitCenter"
         app:srcCompat="@drawable/music_default_cover" />
 
     <LinearLayout
