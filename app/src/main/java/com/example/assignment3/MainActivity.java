@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                     songAddress.setText(musicInformation.get(i).path);
                     songName.setText(musicInformation.get(i).name);
                     artistName.setText(musicInformation.get(i).artist);
-                    imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
+                    imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
                     controlMusic.play(songAddress.getText().toString());
 
                     ImageButton imageButton = findViewById(R.id.started);
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 artistName.setText(musicInformation.get(selectedSong).artist);
 
                 ImageView imageView = view.findViewById(R.id.imageViewCover);
-                imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
+                imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
 
                 controlMusic.play(songAddress.getText().toString());
 
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 songName.setText(musicInformation.get(selectedSong).name);
                 artistName.setText(musicInformation.get(selectedSong).artist);
 
-                imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
+                imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
 
                 controlMusic.play(songAddress.getText().toString());
 
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
                     vh.name.post(()->vh.name.setText(musicInformation.get(i).name));
                     vh.artist.post(()->vh.artist.setText(musicInformation.get(i).artist));
                     vh.duration.post(()->vh.duration.setText(getFormattedTime(musicInformation.get(i).duration)));
-                    vh.cover.post(()->vh.cover.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(i).path)));
+                    vh.cover.post(()->vh.cover.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(i).path, false)));
                 }
             });
             return view;

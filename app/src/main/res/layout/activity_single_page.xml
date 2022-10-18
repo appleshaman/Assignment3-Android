@@ -65,7 +65,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/CoverForSingle"
+        android:id="@+id/coverForSingle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -135,7 +135,7 @@
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/started2"
+        android:id="@+id/startedForSingle"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="center"
@@ -144,7 +144,7 @@
         app:srcCompat="@android:drawable/ic_media_pause" />
 
     <ImageButton
-        android:id="@+id/paused2"
+        android:id="@+id/pausedForSingle"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="center"

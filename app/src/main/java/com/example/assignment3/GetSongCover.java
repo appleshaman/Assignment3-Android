@@ -10,11 +10,16 @@ import android.media.MediaMetadataRetriever;
 import android.widget.ImageView;
 
 public class GetSongCover {
-    public static Bitmap getCoverPicture(Context context, String path) {
+    public static Bitmap getCoverPicture(String path, boolean bigOrSmall) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(path);
         byte[] bytes = mediaMetadataRetriever.getEmbeddedPicture();
-
+        float size;
+        if(bigOrSmall){
+            size = 500;
+        }else{
+            size = 120;
+        }
         Bitmap bitmap;
         if (bytes != null) {
             bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -22,8 +27,8 @@ public class GetSongCover {
             int height = bitmap.getHeight();
 
             Matrix matrix = new Matrix();
-            float sx = ((float) 120 / width);
-            float sy = ((float) 120 / height);
+            float sx = (size / width);
+            float sy = (size / height);
             matrix.postScale(sx, sy);
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
         } else {
@@ -32,8 +37,8 @@ public class GetSongCover {
             int width = bitmap.getWidth();//if could not find cover from the song
             int height = bitmap.getHeight();
             Matrix matrix = new Matrix();
-            float sx = ((float) 120 / width);
-            float sy = ((float) 120 / height);
+            float sx = (size / width);
+            float sy = (size / height);
             matrix.postScale(sx, sy);
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
         }

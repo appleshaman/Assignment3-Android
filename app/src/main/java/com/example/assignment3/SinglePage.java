@@ -23,6 +23,7 @@ public class SinglePage extends AppCompatActivity {
     private ArrayList<JavaBeanSong> musicInformation = new ArrayList<JavaBeanSong>();
 
     private boolean isUnbind = false;
+
     private Intent intent;
 
     private ImageButton last;
@@ -35,11 +36,11 @@ public class SinglePage extends AppCompatActivity {
     private Context context;
     private TextView songAddress;
     private ImageView coverPicture;
-    GetSongCover getSongCover = new GetSongCover();
+    public GetSongCover getSongCover = new GetSongCover();
     private int selectedSong;
 
     private void init(){
-        context = this;
+
         last = findViewById(R.id.lastForSingle);
         pause = findViewById(R.id.pauseForSingle);
         next = findViewById(R.id.nextForSingle);
@@ -47,13 +48,12 @@ public class SinglePage extends AppCompatActivity {
         back = findViewById(R.id.imageButtonBack);
         artistName  = findViewById(R.id.artistForSingle);
         songName = findViewById(R.id.nameForSingle);
-        coverPicture = findViewById(R.id.imageViewCover);
+        coverPicture = findViewById(R.id.coverForSingle);
 
-        //songAddress.setText(musicInformation.get(selectedSong).path);
         songName.setText(musicInformation.get(selectedSong).name);
         artistName.setText(musicInformation.get(selectedSong).artist);
 
-        //coverPicture.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));
+        coverPicture.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, true));
 
     }
 
@@ -73,10 +73,10 @@ public class SinglePage extends AppCompatActivity {
         init();
 
         if(!receiveIntent.getBooleanExtra("isPlay", false)){
-            ImageButton imageButton = findViewById(R.id.paused2);
+            ImageButton imageButton = findViewById(R.id.pausedForSingle);
             pause.setImageDrawable(imageButton.getDrawable());//change button icon
         }else{
-            ImageButton imageButton = findViewById(R.id.started2);
+            ImageButton imageButton = findViewById(R.id.startedForSingle);
             pause.setImageDrawable(imageButton.getDrawable());//change button icon
         }
 
@@ -91,11 +91,11 @@ public class SinglePage extends AppCompatActivity {
                 songName.setText(musicInformation.get(selectedSong).name);
                 artistName.setText(musicInformation.get(selectedSong).artist);
 
-                coverPicture.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
+                coverPicture.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, true));//set cover
 
                 controlMusic.play(musicInformation.get(selectedSong).path);
 
-                ImageButton imageButton = findViewById(R.id.started);
+                ImageButton imageButton = findViewById(R.id.startedForSingle);
                 pause.setImageDrawable(imageButton.getDrawable());//change button icon
             }
         });
@@ -103,11 +103,11 @@ public class SinglePage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(controlMusic.isPlaying()){
-                    ImageButton imageButton = findViewById(R.id.paused2);
+                    ImageButton imageButton = findViewById(R.id.pausedForSingle);
                     pause.setImageDrawable(imageButton.getDrawable());//change button icon
                     controlMusic.pauseMusic();
                 }else{
-                    ImageButton imageButton = findViewById(R.id.started2);
+                    ImageButton imageButton = findViewById(R.id.startedForSingle);
                     pause.setImageDrawable(imageButton.getDrawable());//change button icon
                     controlMusic.continueMusic();
                 }
@@ -124,23 +124,21 @@ public class SinglePage extends AppCompatActivity {
                 songName.setText(musicInformation.get(selectedSong).name);
                 artistName.setText(musicInformation.get(selectedSong).artist);
 
-                coverPicture.setImageBitmap(getSongCover.getCoverPicture(context,musicInformation.get(selectedSong).path));//set cover
+                coverPicture.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, true));//set cover
 
                 controlMusic.play(musicInformation.get(selectedSong).path);
 
-                ImageButton imageButton = findViewById(R.id.started);
+                ImageButton imageButton = findViewById(R.id.startedForSingle);
                 pause.setImageDrawable(imageButton.getDrawable());//change button icon
             }
         });
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 setResult(RESULT_OK, getIntent().putExtra("selectedSong", Integer.toString(selectedSong)));
                 finish();
             }
         });
-
     }
 
     class MyServiceConn implements ServiceConnection {
