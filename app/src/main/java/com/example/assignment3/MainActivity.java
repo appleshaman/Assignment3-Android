@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
@@ -74,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
                 "android.permission.WRITE_EXTERNAL_STORAGE"
         };
         requestPermissions(permissions, 200);
+        getWindow().setStatusBarColor(Color.parseColor("#ec4141"));//set Status bar color
+
         userNameTextView = findViewById(R.id.textViewUser);
         imageViewBottom = findViewById(R.id.imageViewBottom);
         last = findViewById(R.id.lastForSingle);

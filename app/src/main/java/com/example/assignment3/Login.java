@@ -3,6 +3,7 @@ package com.example.assignment3;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
@@ -27,6 +28,8 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        getWindow().setStatusBarColor(Color.parseColor("#ec4141"));//set Status bar color
 
         Button btn_login = findViewById(R.id.buttonLogin);
         Button btn_forget = findViewById(R.id.buttonForget);
