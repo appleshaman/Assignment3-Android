@@ -1,4 +1,4 @@
-package com.example.assignment3;
+package com.example.assignment3.Utils;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +9,7 @@ import com.example.assignment3.JavaBeanSong;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScanLocalMusic {
+public class ScanLocalMusicUtils {
 
     public static ArrayList<JavaBeanSong> getMusicData(Context context) {
         ArrayList<JavaBeanSong> list = new ArrayList<JavaBeanSong>();
@@ -32,13 +32,14 @@ public class ScanLocalMusic {
                     song.name = strings[1];
                     song.artist = strings[0];
                 }
+                //remove the suffix from the song, normally only those two formats are used, so I
+                //only wrote the function for those two suffixes
                 if ((song.name.charAt(song.name.length()-4) == '.')&&// remove .mp3 suffix
                         (song.name.charAt(song.name.length()-3) == 'm')&&
                         (song.name.charAt(song.name.length()-2) == 'p')&&
                         (song.name.charAt(song.name.length()-1) == '3')){
                     song.name = song.name.substring(0, song.name.length()-4);
                 }
-
                 if ((song.name.charAt(song.name.length()-5) == '.')&&
                         (song.name.charAt(song.name.length()-4) == 'f')&&// remove .flac suffix
                         (song.name.charAt(song.name.length()-3) == 'l')&&
@@ -46,7 +47,6 @@ public class ScanLocalMusic {
                         (song.name.charAt(song.name.length()-1) == 'c')){
                     song.name = song.name.substring(0, song.name.length()-4);
                 }
-
                 list.add(song);
             }
             cursor.close();

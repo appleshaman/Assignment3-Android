@@ -26,6 +26,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.assignment3.Utils.FormatTheTimeUtils;
+import com.example.assignment3.Utils.GetSongCoverUtils;
+import com.example.assignment3.Utils.ScanLocalMusicUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -46,13 +50,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton next;
     private TextView artistName;
     private TextView songName;
-    private Context context;
     private TextView songAddress;
 
     private boolean loopOrNot = false;// if loop to play this song
     private boolean logged = true;// for debug
-
-    GetSongCover getSongCover = new GetSongCover();
 
     MusicService.controlMusic controlMusic;//playing music
     MusicService musicService;
@@ -73,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
                 "android.permission.WRITE_EXTERNAL_STORAGE"
         };
         requestPermissions(permissions, 200);
-        context = this;
         userNameTextView = findViewById(R.id.textViewUser);
         imageViewBottom = findViewById(R.id.imageViewBottom);
         last = findViewById(R.id.lastForSingle);
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                             songAddress.setText(musicInformation.get(selectedSong).path);
                             songName.setText(musicInformation.get(selectedSong).name);
                             artistName.setText(musicInformation.get(selectedSong).artist);
-                            imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
+                            imageViewBottom.setImageBitmap(GetSongCoverUtils.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
 
 
                         }
@@ -145,8 +145,7 @@ public class MainActivity extends AppCompatActivity {
             logged = true;
         }
 
-        ScanLocalMusic scanLocalMusic = new ScanLocalMusic();
-        musicInformation = scanLocalMusic.getMusicData(this);
+        musicInformation = ScanLocalMusicUtils.getMusicData(this);
 
         TileAdapter tileAdapter = new TileAdapter();
         songList = (ListView) findViewById(R.id.musicList);
@@ -159,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                     songAddress.setText(musicInformation.get(i).path);
                     songName.setText(musicInformation.get(i).name);
                     artistName.setText(musicInformation.get(i).artist);
-                    imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
+                    imageViewBottom.setImageBitmap(GetSongCoverUtils.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
                     controlMusic.play(songAddress.getText().toString());
 
                     ImageButton imageButton = findViewById(R.id.started);
@@ -196,8 +195,7 @@ public class MainActivity extends AppCompatActivity {
                     songName.setText(musicInformation.get(selectedSong).name);
                     artistName.setText(musicInformation.get(selectedSong).artist);
 
-                    ImageView imageView = view.findViewById(R.id.imageViewCover);
-                    imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
+                    imageViewBottom.setImageBitmap(GetSongCoverUtils.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
 
                     controlMusic.play(songAddress.getText().toString());
 
@@ -246,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                     songName.setText(musicInformation.get(selectedSong).name);
                     artistName.setText(musicInformation.get(selectedSong).artist);
 
-                    imageViewBottom.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
+                    imageViewBottom.setImageBitmap(GetSongCoverUtils.getCoverPicture(musicInformation.get(selectedSong).path, false));//set cover
 
                     controlMusic.play(songAddress.getText().toString());
 
@@ -266,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
                 } else {
-                    activityResultLauncherForSingle.launch(true);
+                    activityResultLauncherForSingle.launch(true);//enter the single page for each song
                 }
             }
         });
@@ -319,9 +317,8 @@ public class MainActivity extends AppCompatActivity {
                 if (vh.position == i) {
                     vh.name.post(() -> vh.name.setText(musicInformation.get(i).name));
                     vh.artist.post(() -> vh.artist.setText(musicInformation.get(i).artist));
-                    FormatTheTime formatTheTime = new FormatTheTime();
-                    vh.duration.post(() -> vh.duration.setText(formatTheTime.getFormattedTime(musicInformation.get(i).duration)));
-                    vh.cover.post(() -> vh.cover.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(i).path, false)));
+                    vh.duration.post(() -> vh.duration.setText(FormatTheTimeUtils.getFormattedTime(musicInformation.get(i).duration)));
+                    vh.cover.post(() -> vh.cover.setImageBitmap(GetSongCoverUtils.getCoverPicture(musicInformation.get(i).path, false)));
                 }
             });
             return view;
@@ -331,8 +328,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("userName", userName);
         super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putSerializable("musicInformationForMain", (Serializable) musicInformation);
+        savedInstanceState.putInt("selectedSongForMain", selectedSong);
+        savedInstanceState.putString("userNameForMain", userName);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        musicInformation = (ArrayList<JavaBeanSong>) savedInstanceState.getSerializable("musicInformationForMain");
+        selectedSong = savedInstanceState.getInt("selectedSongForMain", selectedSong);
+        userName = savedInstanceState.getString("userNameForMain");
     }
 
     private class ResultContractForLogin extends ActivityResultContract<Boolean, String> {
@@ -344,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public String parseResult(int resultCode, @Nullable Intent intent) {
-            return intent.getStringExtra("user");
+            return intent.getStringExtra("user");// when the login page closed, send the user's name back
         }
     }
 
@@ -356,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("loop", loopOrNot);
             intent.putExtra("musicInformation", (Serializable) musicInformation);
             intent.putExtra("selectedSong", selectedSong);
-            intent.putExtra("isPlay", controlMusic.isPlaying());
+            intent.putExtra("isPlay", controlMusic.isPlaying());// send information needs for single page
             return intent;
         }
 
@@ -387,12 +394,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbind(isUnbind);
-    }
-
     public class ReceiverForLoop extends BroadcastReceiver {// receive the duration time
 
         @Override
@@ -414,13 +415,22 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             } else {
-                if(controlMusic.isPlaying()){// check again because the loop may already started
+                if (controlMusic.isPlaying()) {// check again because the loop may already started
                     ImageButton imageButton = findViewById(R.id.started);
                     pause.setImageDrawable(imageButton.getDrawable());//change button icon
                     controlMusic.continueMusic();
                 }
             }
         }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbind(isUnbind);
+        localBroadcastManagerForFinish.unregisterReceiver(receiverForFinish);
+        localBroadcastManagerForLoop.unregisterReceiver(receiverForLoop);
     }
 
 }

@@ -11,18 +11,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.assignment3.Utils.FormatTheTimeUtils;
+import com.example.assignment3.Utils.GetSongCoverUtils;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -47,8 +47,6 @@ public class SinglePage extends AppCompatActivity {
     private SeekBar seekBar;
 
     private ImageView coverPicture;
-    private GetSongCover getSongCover = new GetSongCover();
-    private FormatTheTime formatTheTime = new FormatTheTime();
 
     private LocalBroadcastManager localBroadcastManager;
     private Receiver receiver;
@@ -72,8 +70,13 @@ public class SinglePage extends AppCompatActivity {
 
         songName.setText(musicInformation.get(selectedSong).name);
         artistName.setText(musicInformation.get(selectedSong).artist);
-        totalDuration.setText(FormatTheTime.getFormattedTime(musicInformation.get(selectedSong).duration));
-        coverPicture.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, true));
+        totalDuration.setText(FormatTheTimeUtils.getFormattedTime(musicInformation.get(selectedSong).duration));
+        coverPicture.setImageBitmap(GetSongCoverUtils.getCoverPicture(musicInformation.get(selectedSong).path, true));
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);// register a receiver to receive the information about progress of music from the Service
+        intentFilter = new IntentFilter("progress");
+        receiver = new Receiver();
+        localBroadcastManager.registerReceiver(receiver, intentFilter);
     }
 
 
@@ -85,10 +88,10 @@ public class SinglePage extends AppCompatActivity {
             int total = bundle.getInt("totalDuration");
             int current = bundle.getInt("currentDuration");
 
-            seekBar.setMax(total);
-            seekBar.setProgress(current);
-            totalDuration.setText(FormatTheTime.getFormattedTime(total));
-            currentDuration.setText(FormatTheTime.getFormattedTime(current));
+            seekBar.setMax(total);//set the total time
+            seekBar.setProgress(current);//set current progress
+            totalDuration.setText(FormatTheTimeUtils.getFormattedTime(total));
+            currentDuration.setText(FormatTheTimeUtils.getFormattedTime(current));
         }
     }
 
@@ -98,24 +101,20 @@ public class SinglePage extends AppCompatActivity {
         setContentView(R.layout.activity_single_page);
 
         Intent receiveIntent = getIntent();
-        musicInformation = (ArrayList<JavaBeanSong>) receiveIntent.getSerializableExtra("musicInformation");
+        musicInformation = (ArrayList<JavaBeanSong>) receiveIntent.getSerializableExtra("musicInformation");//store the music information
         selectedSong = receiveIntent.getIntExtra("selectedSong", -1);
         loopOrNot = receiveIntent.getBooleanExtra("loop",false);
 
         myServiceConn = new MyServiceConn();
         intent = new Intent(this, MusicService.class);
         bindService(intent, myServiceConn,BIND_AUTO_CREATE);
-        startService(intent);
+        startService(intent);//bind the service
 
         init();
 
-        localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        intentFilter = new IntentFilter("progress");
-        receiver = new Receiver();
 
-        localBroadcastManager.registerReceiver(receiver, intentFilter);
 
-        if(!receiveIntent.getBooleanExtra("isPlay", false)){// see if the music is playing
+        if(!receiveIntent.getBooleanExtra("isPlay", false)){//see if the music is playing
             ImageButton imageButton = findViewById(R.id.pausedForSingle);
             pause.setImageDrawable(imageButton.getDrawable());//change button icon
         }else{
@@ -132,7 +131,7 @@ public class SinglePage extends AppCompatActivity {
                     intent.setAction("finish");
                     LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
                     localBroadcastManager.sendBroadcast(intent);
-                    if (loopOrNot == false) {
+                    if (!loopOrNot) {
                         controlMusic.pauseMusic();
                         ImageButton imageButton = findViewById(R.id.pausedForSingle);
                         pause.setImageDrawable(imageButton.getDrawable());//change button icon
@@ -151,7 +150,6 @@ public class SinglePage extends AppCompatActivity {
                 controlMusic.seekTo(seekBar.getProgress());
             }
         });
-
         last.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -161,8 +159,8 @@ public class SinglePage extends AppCompatActivity {
                 }
                 songName.setText(musicInformation.get(selectedSong).name);
                 artistName.setText(musicInformation.get(selectedSong).artist);
-                totalDuration.setText(FormatTheTime.getFormattedTime(musicInformation.get(selectedSong).duration));
-                coverPicture.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, true));//set cover
+                totalDuration.setText(FormatTheTimeUtils.getFormattedTime(musicInformation.get(selectedSong).duration));
+                coverPicture.setImageBitmap(GetSongCoverUtils.getCoverPicture(musicInformation.get(selectedSong).path, true));//set cover
 
                 controlMusic.play(musicInformation.get(selectedSong).path);
 
@@ -193,8 +191,8 @@ public class SinglePage extends AppCompatActivity {
                 }
                 songName.setText(musicInformation.get(selectedSong).name);
                 artistName.setText(musicInformation.get(selectedSong).artist);
-                totalDuration.setText(FormatTheTime.getFormattedTime(musicInformation.get(selectedSong).duration));
-                coverPicture.setImageBitmap(getSongCover.getCoverPicture(musicInformation.get(selectedSong).path, true));//set cover
+                totalDuration.setText(FormatTheTimeUtils.getFormattedTime(musicInformation.get(selectedSong).duration));
+                coverPicture.setImageBitmap(GetSongCoverUtils.getCoverPicture(musicInformation.get(selectedSong).path, true));//set cover
                 controlMusic.play(musicInformation.get(selectedSong).path);
                 ImageButton imageButton = findViewById(R.id.startedForSingle);
                 pause.setImageDrawable(imageButton.getDrawable());//change button icon
@@ -212,7 +210,6 @@ public class SinglePage extends AppCompatActivity {
                 finish();
             }
         });
-
         loopOrNotButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -249,9 +246,25 @@ public class SinglePage extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putSerializable("musicInformationForSingle", (Serializable) musicInformation);
+        savedInstanceState.putInt("selectedSongForSingle", selectedSong);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        musicInformation = (ArrayList<JavaBeanSong>) savedInstanceState.getSerializable("musicInformationForSingle");
+        selectedSong = savedInstanceState.getInt("selectedSongForSingle", selectedSong);
+    }
+
     protected void onDestroy() {
         super.onDestroy();
         unbindService(myServiceConn);
+        localBroadcastManager.unregisterReceiver(receiver);
     }
 
 }

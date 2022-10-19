@@ -54,9 +54,10 @@ public class MusicService extends Service {
                     intent.setAction("progress");
                     LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
                     localBroadcastManager.sendBroadcast(intent);
-
                 }
             };
+            // this timer will use local broadcast to send the status of current progress every 0.5 second
+            //give it 10 ms to let the player service ready
             timer.schedule(timerTask,10, 500);
         }
     }
@@ -101,7 +102,9 @@ public class MusicService extends Service {
     public void onDestroy(){
         super.onDestroy();
         if(player != null) {
-            if (player.isPlaying()) player.stop();
+            if (player.isPlaying()) {
+                player.stop();
+            }
             player.release();
             player = null;
         }
