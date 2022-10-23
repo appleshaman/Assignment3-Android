@@ -26,6 +26,10 @@ public class Login extends AppCompatActivity {
     private EditText editText_Pass;
     private EditText editText_Account;
     UserDao mDao;
+    int ifUser;
+    String user;
+    int correctness;
+    String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +80,14 @@ public class Login extends AppCompatActivity {
 
                 mDao = db.UserDao();
 
-                String user = editText_Account.getText().toString();
-                int temp_user = mDao.ifExists(user);
 
-                if(temp_user == 0){
+                user = editText_Account.getText().toString();
+                new Thread(() -> {
+                ifUser = mDao.ifExists(user);
+                }).start();
+
+
+                if(ifUser == 0){
                     Context context = getApplicationContext();
                     CharSequence text = "User does not exist! ";
                     int duration = Toast.LENGTH_SHORT;
@@ -90,7 +98,7 @@ public class Login extends AppCompatActivity {
                 }
 
 
-                String password = null;
+
 
                 try {
                     MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -110,7 +118,11 @@ public class Login extends AppCompatActivity {
                 //I did not implemented database, so verify the password here
 //                if(Objects.equals(password, "b1f8f78e5a676b8ae6d4c12f4785887ca9e583d533e8b973534a5cc44286a36a")){
 
-                if(mDao.ifMatch(user, password) == 1){
+                new Thread(() -> {
+                    correctness = mDao.ifMatch(user, password);
+                }).start();
+
+                if(correctness == 1){
                     Context context = getApplicationContext();
                     CharSequence text = "Welcome back!";
                     int duration = Toast.LENGTH_SHORT;

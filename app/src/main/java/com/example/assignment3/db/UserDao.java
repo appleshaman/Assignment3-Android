@@ -9,10 +9,13 @@ import androidx.room.Query;
 public interface UserDao {
     @Insert
     void insert(User user);
+
     @Delete
     void deleteUser(User user);
+
     @Query("SELECT EXISTS(SELECT username FROM user WHERE username = :user)")
     int ifExists(String user);
+
     @Query("SELECT user.password FROM user WHERE username = :user AND password = :pass")
     int ifMatch(String user, String pass);
 
