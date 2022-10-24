@@ -20,10 +20,12 @@ import java.util.concurrent.Executors;
 @Database(entities = {User.class}, version = 1)
 public abstract class UserDatabase extends RoomDatabase {
     public abstract UserDao UserDao();
-
-    private static final String username = "martin";
-    private static final String pass = "159336";
-    private static String encryptedPass = null;
+    //due to time limit, we did not make a register function, so we can only store the account and it's password here.
+    //but in a ideal app, we only store them in database
+    private static final String username1 = "martin";// first account
+    private static final String password1 = "159336";
+    private static final String username2 = "notMartin";// second account
+    private static final String password2 = "123456";
 
     private static volatile UserDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 1;
@@ -54,11 +56,11 @@ public abstract class UserDatabase extends RoomDatabase {
             databaseWriteExecutor.execute(() -> {
                 UserDao dao = INSTANCE.UserDao();
                 dao.deleteAllUser();
-                EncryptPass();
-                User martin = new User(username, encryptedPass);
-                Log.i("db","username:" + username);
+                User martin = new User(username1, EncryptPass(password1));
+                Log.i("db","username:" + username1);
                 dao.insert(martin);
-                dao.insert(new User("notmartin", "123456"));
+                User notMartin = new User(username2, EncryptPass(password2));
+                dao.insert(notMartin);
                 Log.i("db","Database Populated");
 
 
@@ -66,19 +68,18 @@ public abstract class UserDatabase extends RoomDatabase {
         }
     };
 
-    private static void EncryptPass(){
+    private static String EncryptPass(String password){
+        String encryptedPass = null;
         try {
+
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            encryptedPass = GetHexUtils.encode(md.digest(pass.getBytes()));
+            encryptedPass = GetHexUtils.encode(md.digest(password.getBytes()));
             Log.i("db","encrypted:" + encryptedPass);
+
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-
+        return encryptedPass;
     }
-
-
-
-
 
 }

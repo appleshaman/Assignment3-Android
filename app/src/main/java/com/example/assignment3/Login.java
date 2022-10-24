@@ -59,9 +59,9 @@ public class Login extends AppCompatActivity {
 
         btn_forget.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) {// if user forget the password
                 Context context = getApplicationContext();
-                CharSequence text = "It's this course's number";
+                CharSequence text = "It's this course's number or 123456";
                 int duration = Toast.LENGTH_SHORT;
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
@@ -98,14 +98,14 @@ public class Login extends AppCompatActivity {
                 t1.start();
 
                 //wait for query thread to end
-                try {
+                try {// search the user name in database
                     t1.join();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
 
-                if(ifUser == 0){
+                if(ifUser == 0){// if the user is not correct
                     Log.i("login", "ifuser-2: " + ifUser);
                     Context context = getApplicationContext();
                     CharSequence text = "User does not exist! ";
@@ -113,13 +113,13 @@ public class Login extends AppCompatActivity {
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
                     editText_Account.setText("");
-
+                    editText_Pass.setText("");
                 }else{
                     try {
                         MessageDigest md = MessageDigest.getInstance("SHA-256");
                         //use SHA-256 to hide the password, only match the hash value
                         //which avoided store plain text of password
-                        password = GetHexUtils.encode(md.digest(editText_Pass.getText().toString().getBytes()));
+                        password = GetHexUtils.encode(md.digest(editText_Pass.getText().toString().getBytes()));//password is stored in SHA-256
 
                     } catch (NoSuchAlgorithmException e) {
                         e.printStackTrace();
@@ -131,19 +131,17 @@ public class Login extends AppCompatActivity {
                     //I did not implemented database, so verify the password here
 //                if(Objects.equals(password, "b1f8f78e5a676b8ae6d4c12f4785887ca9e583d533e8b973534a5cc44286a36a")){
 
-                    Thread t2 = new Thread(() -> {
-                        correctness = mDao.ifMatch(user, password);
+                    Thread t2 = new Thread(() -> {//search the password in database see if it match the user
+                        correctness = mDao.ifMatch(user, password);// manipulate database requires different thread
                     });
-
                     t2.start();
-
                     try {
                         t2.join();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
 
-                    if(correctness == 1){
+                    if(correctness == 1){// the password is correct, and login page is closed
                         Context context = getApplicationContext();
                         CharSequence text = "Welcome back!";
                         int duration = Toast.LENGTH_SHORT;
@@ -153,7 +151,7 @@ public class Login extends AppCompatActivity {
 
                         setResult(RESULT_OK, getIntent().putExtra("user", editText_Account.getText().toString()));
                         Login.this.finish();
-                    }else{
+                    }else{// the password is wrong
                         Context context = getApplicationContext();
                         CharSequence text = "Password is wrong";
                         int duration = Toast.LENGTH_SHORT;
