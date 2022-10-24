@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 
 import com.example.assignment3.Utils.GetHexUtils;
+import com.example.assignment3.db.User;
 import com.example.assignment3.db.UserDao;
 import com.example.assignment3.db.UserDatabase;
 
@@ -30,6 +31,9 @@ public class Login extends AppCompatActivity {
     String user;
     int correctness;
     String password;
+    int count;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,12 @@ public class Login extends AppCompatActivity {
 
 
         UserDatabase db = UserDatabase.getDatabase(this);
+        mDao = db.UserDao();
+        new Thread(() -> {
+            count = mDao.initiate();
+            Log.i("login", "init: " + count);
+        }).start();
+
 
 
         getWindow().setStatusBarColor(Color.parseColor("#ec4141"));//set Status bar color
@@ -78,68 +88,85 @@ public class Login extends AppCompatActivity {
                     return;
                 }
 
-                mDao = db.UserDao();
 
 
                 user = editText_Account.getText().toString();
-                new Thread(() -> {
+                Thread t1 = new Thread(() -> {
                 ifUser = mDao.ifExists(user);
-                }).start();
+                });
+
+                t1.start();
+
+                //wait for query thread to end
+                try {
+                    t1.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
 
                 if(ifUser == 0){
+                    Log.i("login", "ifuser-2: " + ifUser);
                     Context context = getApplicationContext();
                     CharSequence text = "User does not exist! ";
                     int duration = Toast.LENGTH_SHORT;
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
                     editText_Account.setText("");
-                    return;
-                }
+
+                }else{
+                    try {
+                        MessageDigest md = MessageDigest.getInstance("SHA-256");
+                        //use SHA-256 to hide the password, only match the hash value
+                        //which avoided store plain text of password
+                        password = GetHexUtils.encode(md.digest(editText_Pass.getText().toString().getBytes()));
+
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+
+                    Log.i("login", "password: " + password);
 
 
-
-
-                try {
-                    MessageDigest md = MessageDigest.getInstance("SHA-256");
-                    //use SHA-256 to hide the password, only match the hash value
-                    //which avoided store plain text of password
-                    password = GetHexUtils.encode(md.digest(editText_Pass.getText().toString().getBytes()));
-
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                }
-
-
-
-
-
-
-                //I did not implemented database, so verify the password here
+                    //I did not implemented database, so verify the password here
 //                if(Objects.equals(password, "b1f8f78e5a676b8ae6d4c12f4785887ca9e583d533e8b973534a5cc44286a36a")){
 
-                new Thread(() -> {
-                    correctness = mDao.ifMatch(user, password);
-                }).start();
+                    Thread t2 = new Thread(() -> {
+                        correctness = mDao.ifMatch(user, password);
+                    });
 
-                if(correctness == 1){
-                    Context context = getApplicationContext();
-                    CharSequence text = "Welcome back!";
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                    editText_Pass.setText("");//clear the input area
+                    t2.start();
 
-                    setResult(RESULT_OK, getIntent().putExtra("user", editText_Account.getText().toString()));
-                    Login.this.finish();
-                }else{
-                    Context context = getApplicationContext();
-                    CharSequence text = "Password is wrong";
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                    editText_Pass.setText("");
+                    try {
+                        t2.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(correctness == 1){
+                        Context context = getApplicationContext();
+                        CharSequence text = "Welcome back!";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                        //editText_Pass.setText("");//clear the input area
+
+                        setResult(RESULT_OK, getIntent().putExtra("user", editText_Account.getText().toString()));
+                        Login.this.finish();
+                    }else{
+                        Context context = getApplicationContext();
+                        CharSequence text = "Password is wrong";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                        editText_Pass.setText("");
+                    }
                 }
+
+
+
+
+
             }
         });
     }

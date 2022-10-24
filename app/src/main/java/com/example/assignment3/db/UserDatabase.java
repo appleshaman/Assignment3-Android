@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 public abstract class UserDatabase extends RoomDatabase {
     public abstract UserDao UserDao();
 
+    private static final String username = "martin";
     private static final String pass = "159336";
     private static String encryptedPass = null;
 
@@ -51,12 +52,13 @@ public abstract class UserDatabase extends RoomDatabase {
             super.onCreate(db);
 
             databaseWriteExecutor.execute(() -> {
-                Log.i("db", "Executor()");
                 UserDao dao = INSTANCE.UserDao();
+                dao.deleteAllUser();
                 EncryptPass();
-                User martin = new User("martin", encryptedPass);
+                User martin = new User(username, encryptedPass);
+                Log.i("db","username:" + username);
                 dao.insert(martin);
-                dao.insert(new User("Not Martin", "123456"));
+                dao.insert(new User("notmartin", "123456"));
                 Log.i("db","Database Populated");
 
 
