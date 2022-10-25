@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.widget.ImageView;
 
-public class GetSongCoverUtils {
+public class GetSongCoverUtils {//get the cover image for each song
     public static Bitmap getCoverPicture(String path, boolean bigOrSmall) {
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         mediaMetadataRetriever.setDataSource(path);

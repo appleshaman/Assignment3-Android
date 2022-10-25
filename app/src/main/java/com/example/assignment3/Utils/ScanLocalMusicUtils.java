@@ -9,7 +9,7 @@ import com.example.assignment3.JavaBeanSong;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScanLocalMusicUtils {
+public class ScanLocalMusicUtils {//used to get a music list from local file
 
     public static ArrayList<JavaBeanSong> getMusicData(Context context) {
         ArrayList<JavaBeanSong> list = new ArrayList<JavaBeanSong>();

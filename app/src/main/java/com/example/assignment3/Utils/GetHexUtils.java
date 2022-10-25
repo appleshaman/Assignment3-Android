@@ -1,9 +1,6 @@
 package com.example.assignment3.Utils;
 
-public class GetHexUtils {
-
-
-    // a function used to make hex decimal
+public class GetHexUtils { // a function used to make hex decimal
     private final static char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5', '6',
             '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
