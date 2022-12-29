@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -54,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView songAddress;
 
     private boolean loopOrNot = false;// if loop to play this song
-    private boolean logged = true;// for debug
+    private boolean logged = true;
+    private boolean skipLogin = true;// for debug
 
     MusicService.controlMusic controlMusic;//playing music
     MusicService musicService;
@@ -136,18 +138,18 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-
         if (savedInstanceState != null) {
             userName = savedInstanceState.getString("userName", null);
         }
         if (userName == null) {// means if have not logged in, jump to the login page
             logged = false;// comment out this to skip the login process for debug
         }
-        if (!logged) {
-            activityResultLauncherForLogin.launch(true);
-            logged = true;
+        if(!skipLogin) {
+            if (!logged) {
+                activityResultLauncherForLogin.launch(true);
+                logged = true;
+            }
         }
-
         musicInformation = ScanLocalMusicUtils.getMusicData(this);
 
         TileAdapter tileAdapter = new TileAdapter();
@@ -303,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
             if (view == null) {
                 view = getLayoutInflater().inflate(R.layout.music_information, viewGroup, false);
                 vh = new ViewHolder();
+                vh.name = userNameTextView;
                 vh.name = view.findViewById(R.id.nameForSingle);
                 vh.artist = view.findViewById(R.id.artistForSingle);
                 vh.duration = view.findViewById(R.id.duration);
@@ -406,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class ReceiverForFinish extends BroadcastReceiver {// receive the duration time
+    public class ReceiverForFinish extends BroadcastReceiver {// receive the finish or not
 
         @Override
         public void onReceive(Context context, Intent intent) {

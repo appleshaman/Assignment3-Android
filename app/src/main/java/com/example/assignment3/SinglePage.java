@@ -110,7 +110,7 @@ public class SinglePage extends AppCompatActivity {
 
         myServiceConn = new MyServiceConn();
         intent = new Intent(this, MusicService.class);
-        bindService(intent, myServiceConn,BIND_AUTO_CREATE);
+        bindService(intent, myServiceConn, BIND_AUTO_CREATE);
         startService(intent);//bind the service
 
         init();

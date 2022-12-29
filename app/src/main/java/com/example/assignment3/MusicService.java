@@ -1,19 +1,15 @@
 package com.example.assignment3;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Message;
-import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -51,7 +47,7 @@ public class MusicService extends Service {
                     bundle.putInt("currentDuration",currentPosition);
                     Intent intent = new Intent();
                     intent.putExtra("musicDuration", bundle);
-                    intent.setAction("progress");
+                    intent.setAction("progress");// for intent filter to fit different information
                     LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
                     localBroadcastManager.sendBroadcast(intent);
                 }
