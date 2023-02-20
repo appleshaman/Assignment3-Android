@@ -5,6 +5,7 @@ import static com.example.assignment3.Utils.Encryption.EncryptPass;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +30,7 @@ public class Register extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        getWindow().setStatusBarColor(Color.parseColor("#ec4141"));//set Status bar color
 
         mDao = db.UserDao();
 

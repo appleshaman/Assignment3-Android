@@ -7,24 +7,33 @@
     android:orientation="vertical"
     tools:context=".Register">
 
-    <TextView
-        android:id="@+id/textViewUser"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:autoSizeMaxTextSize="56sp"
-        android:autoSizeMinTextSize="20sp"
-        android:autoText="true"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:background="@color/red"
-        android:text="Music App"
-        android:textAlignment="gravity"
-        android:textColor="@color/white"
-        android:textSize="40sp" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textViewUser"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:autoSizeMaxTextSize="56sp"
+            android:autoSizeMinTextSize="20sp"
+            android:autoText="true"
+            android:background="@color/red"
+            android:text="Music App"
+            android:textAlignment="gravity"
+            android:textColor="@color/white"
+            android:textSize="40sp" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textViewHint"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="100dp"
+        android:layout_height="0dp"
+        android:layout_weight="5"
         android:gravity="center"
         android:text="Welcome to register"
         android:textColor="@color/black"
@@ -33,8 +42,9 @@
     <EditText
         android:id="@+id/editTextTextRegisterName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginHorizontal="40dp"
+        android:layout_weight="1"
         android:ems="10"
         android:hint="User name"
         android:inputType="textPersonName" />
@@ -42,8 +52,9 @@
     <EditText
         android:id="@+id/editTextTextRegisterPassword"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginHorizontal="40dp"
+        android:layout_weight="1"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword" />
@@ -51,16 +62,18 @@
     <EditText
         android:id="@+id/editTextTextRepeatPassword"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginHorizontal="40dp"
+        android:layout_weight="1"
         android:ems="10"
         android:hint="Repeat the password"
         android:inputType="textPassword" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <Button
