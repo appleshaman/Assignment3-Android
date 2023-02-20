@@ -3,6 +3,7 @@ package com.example.assignment3;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
@@ -18,6 +19,7 @@ import com.example.assignment3.Utils.GetHexUtils;
 import com.example.assignment3.db.User;
 import com.example.assignment3.db.UserDao;
 import com.example.assignment3.db.UserDatabase;
+import com.example.assignment3.db.UserDb;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -40,8 +42,8 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
-        UserDatabase db = UserDatabase.getDatabase(this);
+        UserDb.setDb(UserDatabase.getDatabase(this));
+        UserDatabase db = UserDb.getDb();
         mDao = db.UserDao();
         new Thread(() -> {
             count = mDao.initiate();
@@ -54,6 +56,7 @@ public class Login extends AppCompatActivity {
 
         Button btn_login = findViewById(R.id.buttonLogin);
         Button btn_forget = findViewById(R.id.buttonForget);
+        Button btn_register = findViewById(R.id.buttonGotoRegister);
         editText_Pass = findViewById(R.id.editTextPassword);
         editText_Account = findViewById(R.id.editTextAccount);
 
@@ -165,6 +168,14 @@ public class Login extends AppCompatActivity {
 
 
 
+            }
+        });
+
+        btn_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Login.this, Register.class);
+                startActivity(intent);
             }
         });
     }

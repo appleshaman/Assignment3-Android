@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean loopOrNot = false;// if loop to play this song
     private boolean logged = true;
-    private boolean skipLogin = true;// for debug
+    private boolean skipLogin = false;// for debug
 
     MusicService.controlMusic controlMusic;//playing music
     MusicService musicService;
@@ -104,13 +104,11 @@ public class MainActivity extends AppCompatActivity {
         localBroadcastManagerForFinish = LocalBroadcastManager.getInstance(this);
         intentFilterForFinish = new IntentFilter("finish");
         receiverForFinish = new ReceiverForFinish();
-
         localBroadcastManagerForFinish.registerReceiver(receiverForFinish, intentFilterForFinish);
 
         localBroadcastManagerForLoop = LocalBroadcastManager.getInstance(this);
         intentFilterForLoop = new IntentFilter("loop");
         receiverForLoop = new ReceiverForLoop();
-
         localBroadcastManagerForLoop.registerReceiver(receiverForLoop, intentFilterForLoop);
 
         ActivityResultLauncher activityResultLauncherForLogin = registerForActivityResult(new ResultContractForLogin(),

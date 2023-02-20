@@ -1,6 +1,8 @@
 package com.example.assignment3.db;
 
 
+import static com.example.assignment3.Utils.Encryption.EncryptPass;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -69,18 +71,6 @@ public abstract class UserDatabase extends RoomDatabase {
         }
     };
 
-    private static String EncryptPass(String password){
-        String encryptedPass = null;
-        try {
 
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            encryptedPass = GetHexUtils.encode(md.digest(password.getBytes()));
-            Log.i("db","encrypted:" + encryptedPass);
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return encryptedPass;
-    }
 
 }
