@@ -24,9 +24,9 @@ public abstract class UserDatabase extends RoomDatabase {
     public abstract UserDao UserDao();
     //due to time limit, we did not make a register function, so we can only store the account and it's password here.
     //but in a ideal app, we only store them in database
-    private static final String username1 = "martin";// first account
+    private static final String username1 = "admin";// first account
     private static final String password1 = "159336";
-    private static final String username2 = "notMartin";// second account
+    private static final String username2 = "default";// second account
     private static final String password2 = "123456";
 
     private static volatile UserDatabase INSTANCE;
