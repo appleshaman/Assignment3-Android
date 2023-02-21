@@ -2,29 +2,30 @@
 It is a music player with database
 
 ## User instruction
-
+<img src="https://github.com/appleshaman/Assignment3-Android/blob/main/docs/main.png"><br>
 This is the first page when you enter the app. To log in to this app, 
 we added two accounts:
- 
+<img src="https://github.com/appleshaman/Assignment3-Android/blob/main/docs/accounts.png"><br>
 Both accounts can log into the app. We know sore the plain text of the username and password in the resource code is not ok, but due to the time limit, we did not add a register function to this app. But in the Database Creation part in the Designing Features, we will explain what we did to store the password safely in the database.
 
- 
-After you log in, your username will be displayed at the left top corner of this page, and the app will search all the songs in the mobile phone gallery and display them in the list.
- 
-You can click a song to play it, and when the song is playing, you can either click the song in the list again or click the pause button at the bottom right corner to pause it. To continue playing it, you can do the same action again.  After you select a song, you can click the cover page to enter the third page for more options. If you have not selected a song yet, all the actions above are not available.
- 
-On this page, you can see the progress bar that displays the duration and progress this song played; you can also drag it to jump to the point of time where you want to listen, just like the other music player people normally use.
-  
+<img src="https://github.com/appleshaman/Assignment3-Android/blob/main/docs/musicList.png"><br>
+After you log in, your username will be displayed at the left top corner of this page, and the app will search all the songs in the mobile phone gallery and display them in the list.<br>
+<img src="https://github.com/appleshaman/Assignment3-Android/blob/main/docs/musicStatus.png"><br>
+You can click a song to play it, and when the song is playing, you can either click the song in the list again or click the pause button at the bottom right corner to pause it. To continue playing it, you can do the same action again.  After you select a song, you can click the cover page to enter the third page for more options. If you have not selected a song yet, all the actions above are not available.<br>
+<img src="https://github.com/appleshaman/Assignment3-Android/blob/main/docs/musicPage.png"><br>
+On this page, you can see the progress bar that displays the duration and progress this song played; you can also drag it to jump to the point of time where you want to listen, just like the other music player people normally use.<br>
+<img src="https://github.com/appleshaman/Assignment3-Android/blob/main/docs/loops.png"><br>
 On the right side of the duration bar, there is a button you can set if you want to make this song play loopy. Thus, if you do not enable it, the song will stop once it is finished, but after enabling this, the song will start again to play after it is finished.
 
 ## Design features
 #### Activity Creating order and how to save memory
 We have 3 pages for this app for general use. The order or direction of use will be:
-Login Page -> Main page with music list -> Music page for each single page
+**Login Page -> Main page with music list -> Music page for each single page**
 But in our design, we first start the Main page instead of the Login Page, and we use the Main page to create the Login page, so the Login page can close after finishing the login, which could save more memory. And the creating order is like this:
-Main page with music list -> Login Page -> Music page for each single page
-If we create the page just following the order of use, the login page will not be able to close after login, which causes more memory to be used. In every page is finished, the onDestory()  function will stop the broadcast listener/ unbind music service, depending on which page is finished.
-  
+**Main page with music list -> Login Page -> Music page for each single page**
+If we create the page just following the order of use, the login page will not be able to close after login, which causes more memory to be used. In every page is finished, the **onDestory()** function will stop the broadcast listener/ unbind music service, depending on which page is finished.<br>
+<img src="https://github.com/appleshaman/Assignment3-Android/blob/main/docs/onDestroy.png"><br>
+<img src="https://github.com/appleshaman/Assignment3-Android/blob/main/docs/onDestroy2.png"><br>
 #### Music play
 We use a service to play the music so that we can use control the music in different activities(pages). In the service class, we use a timer to send the music information to the Music page so the page every 0.5 seconds can know the music’s progress and duration.
 #### Call back data (how to send data back to the previous page)
