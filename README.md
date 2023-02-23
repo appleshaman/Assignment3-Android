@@ -1,4 +1,4 @@
-# 159336 Assignment 2
+# 159336 Assignment 3
 It is a music player with database
 
 ## User instruction
